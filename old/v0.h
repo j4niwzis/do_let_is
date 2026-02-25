@@ -1,6 +1,3 @@
-#ifndef DO_LET_IS
-#define DO_LET_IS
-
 #define OUT
 
 #define EVAL_2(...) __VA_ARGS__
@@ -73,7 +70,7 @@ IF_ELSE(FALSE, true, false)
 #define DO_CHECK_LET_IS(...) 0,
 
 #define DO_WORK_LET_IS_0(name, is, ...)                                          \
-  0, return ::bind(is, ([LAMBDA_CAPTURE](auto name) -> auto {                    \
+  0, return ::bind(is, ([LAMBDA_CAPTURE](auto&& name) {                          \
                      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(void() __VA_ARGS__) \
                    }));
 
@@ -85,11 +82,7 @@ IF_ELSE(FALSE, true, false)
                     check __VA_OPT__(PARSE_DO_ITERATION_HELPER OUT)))                                                       \
   __VA_OPT__((__VA_ARGS__))
 
-#define DO_NOEVAL(...)              \
-  [&] {                             \
-    PARSE_DO_ITERATION(__VA_ARGS__) \
+#define DO(...)                                   \
+  [&] {                                           \
+    EVAL(PARSE_DO_ITERATION(void(); __VA_ARGS__)) \
   }()
-
-#define DO(...) EVAL(DO_NOEVAL(__VA_ARGS__))
-
-#endif
