@@ -188,7 +188,7 @@ IF_ELSE(FALSE, true, false)
   __VA_OPT__((1, id_while, id_if, __VA_ARGS__))
 
 #define DO(...)                                            \
-  [LAMBDA_CAPTURE] {                                                    \
+  [&] {                                                    \
     EVAL(PARSE_DO_ITERATION(0, 0, 0, void(); __VA_ARGS__)) \
   }()
 
