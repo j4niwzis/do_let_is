@@ -119,7 +119,7 @@ IF_ELSE(FALSE, true, false)
 #define DO_CHECK_LET_IS(...) 0,
 
 #define DO_WORK_LET_IS_0(name, is, id_while, id_if, ...)                                             \
-  0, return ::bind(is, ([LAMBDA_CAPTURE](auto&& name) mutable {                                              \
+  0, return ::bind(is, ([LAMBDA_CAPTURE](auto&& name) mutable {                                      \
                      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(0, id_while, id_if, void() __VA_ARGS__) \
                    }));
 
@@ -196,4 +196,5 @@ IF_ELSE(FALSE, true, false)
   [] {                                                     \
     EVAL(PARSE_DO_ITERATION(0, 0, 0, void(); __VA_ARGS__)) \
   }()
+
 #endif
