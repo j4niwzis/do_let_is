@@ -155,16 +155,16 @@ IF_ELSE(FALSE, true, false)
 
 #define DO_WORK_BREAK DO_WORK_BREAK_0 DELAY_OPEN_BRACE_0()
 
-#define DO_WORK_IF_BASE(check, body, els, id_while, id_if, ...)                                                      \
-  0, return ([LAMBDA_CAPTURE] {                                                                                      \
-    auto if_cont_##id_if = [LAMBDA_CAPTURE] {                                                                        \
-      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(0, id_while, INC(id_if), void(); __VA_ARGS__)                          \
-    };                                                                                                               \
-    if check {                                                                                                       \
-      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(0, id_while, INC(id_if), void(); EVAL3 body return if_cont_##id_if();) \
-    } else {                                                                                                         \
-      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(0, id_while, INC(id_if), void(); EVAL3 els return if_cont_##id_if();)  \
-    }                                                                                                                \
+#define DO_WORK_IF_BASE(check, body, els, id_while, id_if, ...)                                                          \
+  0, return ([LAMBDA_CAPTURE](this auto if_self_##id_if, bool is_cont = false) {                                         \
+    if(is_cont) {                                                                                                        \
+      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(0, id_while, INC(id_if), void(); __VA_ARGS__)                              \
+    }                                                                                                                    \
+    if check {                                                                                                           \
+      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(0, id_while, INC(id_if), void(); EVAL3 body return if_self_##id_if(true);) \
+    } else {                                                                                                             \
+      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(0, id_while, INC(id_if), void(); EVAL3 els return if_self_##id_if(true);)  \
+    }                                                                                                                    \
   }());
 
 #define DO_CHECK_IF(...) 0,
