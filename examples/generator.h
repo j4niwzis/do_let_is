@@ -1,5 +1,4 @@
 #ifndef GENERATOR
-#define GENERATOR
 
 #include <iterator>
 #include <variant>
@@ -21,6 +20,18 @@
     return gen;                      \
   }()
 
+#define GENERATOR_ES(...)       \
+  [&] {                         \
+    struct : generator_base {   \
+      auto impl() {             \
+        return DO(__VA_ARGS__); \
+      }                         \
+    } gen;                      \
+    return gen;                 \
+  }()
+
+#define YIELD(...) LET _ IS(yielder{__VA_ARGS__})
+
 template <typename T>
 struct yielder {
   T value;
@@ -37,14 +48,12 @@ struct rec {
 };
 
 template <typename T, typename F>
-constexpr auto bind(yielder<T> value, F&& f) -> decltype(std::forward<F>(f)(std::monostate{})) {
+constexpr auto bind(yielder<T> value, F&& f) {
   using R = decltype(std::forward<F>(f)(std::monostate{}));
-  return {.value = typename R::Some{.value = std::move(value.value), .f = [f = std::forward<F>(f)] mutable {
-                                      return std::move(f)(std::monostate{});
-                                    }}};
+  return R{.value = typename R::Some{.value = std::move(value.value), .f = [f = std::forward<F>(f)] mutable {
+                                       return std::move(f)(std::monostate{});
+                                     }}};
 }
-
-#define YIELD(...) LET _ IS(yielder{__VA_ARGS__})  // NOLINT
 
 struct generator_base {
   template <typename S>
