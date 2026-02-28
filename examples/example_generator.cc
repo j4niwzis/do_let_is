@@ -20,7 +20,7 @@ auto my_generator() {
 auto my_generator2() {
   return GENERATOR_ES(
     int i = 0; // You can use state inside a generator as well.
-    YIELD(42);
+    YIELD(42); // But state via value capture is quite dangerous and can lead to unobvious problems.
     WHILE(i != 10)(
       int i2 = 0;
       ++i;
