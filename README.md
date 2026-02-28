@@ -126,6 +126,7 @@ constexpr auto c = DO_GLOBAL(
       )(
         CONTINUE;
       )
+      throw 42; // will never be executed
     );
     LET _ IS(std::optional{42});
     return std::optional<int>{c};
