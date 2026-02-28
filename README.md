@@ -3,7 +3,7 @@ do-notation DSL for C++
 
 If a type supports
 
-`bind(m, f`
+`bind(m, f)`
 
 then it automatically works with this DSL:
 ```cpp
