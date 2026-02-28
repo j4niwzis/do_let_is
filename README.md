@@ -1,7 +1,61 @@
 # do_let_is
 do-notation DSL for C++
 
+If a type supports
+
+`bind(m, f`
+
+then it automatically works with this DSL:
+```cpp
+auto result = DO(
+  LET x IS(mx);
+  LET y IS(my);
+  return make_value(x, y);
+);
+```
+
+The syntax is the same regardless of the underlying monad.
+
+This works for:
+- std::optional
+- std::vector (list monad semantics)
+- std::variant (std::visit)
+- custom types
+
+but the DSL itself is completely type-agnostic. Everything is expressed in terms of bind.
+### Design goals
+- Unified do-notation syntax
+- No C++20 coroutines
+- No dynamic allocations introduced
+- Works in constexpr contexts
+- Linear code instead of nested lambdas
+
+
+
+
 # Examples
+ Without DSL:
+```cpp
+auto result = bind(mx, [&](auto x) {
+  return bind(my, [&](auto y) {
+    return make_value(x, y);
+  });
+});
+```
+With DSL:
+```cpp
+auto result = DO(
+  LET x IS(mx);
+  LET y IS(my);
+  return make_value(x, y);
+);
+```
+Loops and branches are also supported.
+
+You can also easily create generators using this. [Example](https://github.com/j4niwzis/do_let_is/blob/main/examples/example_generator.cc) 
+
+
+### Other examples
 
 ```cpp
 #include <optional>
@@ -24,9 +78,9 @@ constexpr auto optional_function(const std::optional<int>& a, const std::optiona
 
 template <typename T, typename F>
 constexpr auto bind(const std::vector<T>& range, F&& f) -> std::invoke_result_t<F, T> {
-  return range                                        //
-         | std::views::transform(std::forward<F>(f))  //
-         | std::views::join                           //
+  return range
+         | std::views::transform(std::forward<F>(f))
+         | std::views::join
          | std::ranges::to<std::vector>();
 }
 
