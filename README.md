@@ -1,6 +1,8 @@
 # do_let_is
 do-notation DSL for C++
 
+It is not so much needed in itself, but it is a demonstration of the capabilities of the preprocessor about the possibility of creating your own DSLs, a specific idea for parsing them. A full explanation of how it works will come later.
+
 If a type supports
 
 `bind(m, f)`
