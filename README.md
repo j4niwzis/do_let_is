@@ -110,6 +110,21 @@ constexpr auto variant_function(const std::variant<int, float>& a, const std::va
 static_assert(std::get<double>(variant_function(3, 3.14)) == 6.1400000000000006);
 static_assert(std::get<int>(variant_function(3, 3)) == 6);
 
+constexpr auto loop(const std::vector<std::optional<int>>& vec) {
+  return DO(
+    auto it = vec.begin();
+    int result = 0;
+    WHILE(it != vec.end())(
+      LET value IS(*it);
+      result += value;
+      ++it;
+    )
+    return std::optional{result};
+  );
+}
+static_assert(loop({1, 2, 3}) == 6);
+static_assert(loop({1, std::nullopt, 3}) == std::nullopt);
+
 constexpr auto c = DO_GLOBAL(
     int c = 0;
     LET _ IS(std::optional{42});
