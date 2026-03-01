@@ -34,10 +34,6 @@
 
 #define INC(x) INC_##x
 
-#define IS_1_1 0,
-
-#define IF_1(v, t, f) IF_ELSE(IS_1_##v, t, f)
-
 #define LAMBDA_CAPTURE &
 
 #define LET ), _LET_IS(
