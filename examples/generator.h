@@ -20,16 +20,6 @@
     return gen;                      \
   }()
 
-#define GENERATOR_ES(...)       \
-  [&] {                         \
-    struct : generator_base {   \
-      auto impl() {             \
-        return DO(__VA_ARGS__); \
-      }                         \
-    } gen;                      \
-    return gen;                 \
-  }()
-
 #define YIELD(...) LET _ IS(yielder{__VA_ARGS__})
 
 template <typename T>
