@@ -5,29 +5,13 @@
 #define EVAL_0(...) EVAL_1(EVAL_1(EVAL_1(EVAL_1(__VA_ARGS__))))
 #define EVAL(...) EVAL_0(EVAL_0(EVAL_0(EVAL_0(__VA_ARGS__))))
 
-#define VOID(...)
-
-#define DELAY_COMMA_0() ,
-#define DELAY_COMMA_1() DELAY_COMMA_0 OUT()
-#define DELAY_COMMA_2() DELAY_COMMA_1 OUT()
-#define DELAY_COMMA_3() DELAY_COMMA_2 OUT()
-#define DELAY_COMMA_4() DELAY_COMMA_3 OUT()
-
 #define DELAY_OPEN_BRACE_0() (
 #define DELAY_OPEN_BRACE_1() DELAY_OPEN_BRACE_0 OUT()
-#define DELAY_OPEN_BRACE_2() DELAY_OPEN_BRACE_1 OUT()
-#define DELAY_OPEN_BRACE_3() DELAY_OPEN_BRACE_2 OUT()
-
-#define DELAY_CLOSE_BRACE_0() )
-#define DELAY_CLOSE_BRACE_1() DELAY_CLOSE_BRACE_0 OUT()
-#define DELAY_CLOSE_BRACE_2() DELAY_CLOSE_BRACE_1 OUT()
-#define DELAY_CLOSE_BRACE_3() DELAY_CLOSE_BRACE_2 OUT()
 
 #define DELAY_OUT_0() OUT
 #define DELAY_OUT_1() DELAY_OUT_0 OUT()
 #define DELAY_OUT_2() DELAY_OUT_1 OUT()
 #define DELAY_OUT_3() DELAY_OUT_2 OUT()
-#define DELAY_OUT_4() DELAY_OUT_3 OUT()
 
 #define EVAL2(...) __VA_ARGS__
 
@@ -35,54 +19,36 @@
 
 #define CONCAT_0(...) CONCAT_1 OUT(__VA_ARGS__)
 
-#define CONCAT(...) EVAL2(CONCAT_0(__VA_ARGS__))
-
-#define IF_ELSE_1(test, next, ...) next OUT
-#define IF_ELSE_0(test, next, ...) IF_ELSE_1(test, next, __VA_ARGS__, 0)
-
-#define IF_ELSE(condition, t, f) IF_ELSE_0(condition OUT t, f)
-
-/*
-#define CHECK_IF_ELSE 0,
-
-IF_ELSE(CHECK_IF_ELSE, true, false)
-  => IF_ELSE_0(0, OUT true, false)
-  => IF_ELSE_1(0, true, false, 0)
-  => true OUT
-
-IF_ELSE(FALSE, true, false)
-  => IF_ELSE_0(FALSE OUT true, false)
-  => IF_ELSE_1(FALSE true, false, 0)
-  => false OUT
-*/
-
-#ifndef LAMBDA_CAPTURE
 #define LAMBDA_CAPTURE &
-#endif
 
-#define LET , _LET_IS(
+#define LET ), _LET_IS(
 
 #define IS(...) , (__VA_ARGS__)) \
-  ,
+  , _CODE(
 
 #define PARSE_DO_ITERATION_HELPER(...) PARSE_DO_ITERATION OUT(__VA_ARGS__)
 
-#define DO_CHECK_LET_IS(...) 0,
+#define DO_WORK_LET_IS(name, is, ...)                    \
+  return ::bind(is, [LAMBDA_CAPTURE](auto&& name) {      \
+    PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(__VA_ARGS__) \
+  });
 
-#define DO_WORK_LET_IS_0(name, is, ...)                                          \
-  0, return ::bind(is, ([LAMBDA_CAPTURE](auto&& name) mutable {                          \
-                     PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(void() __VA_ARGS__) \
-                   }));
+#define CLOSE_MACRO(...) , __VA_ARGS__ )
 
-#define DO_WORK_LET_IS(name, is) DO_WORK_LET_IS_0 DELAY_OPEN_BRACE_0() name, is,
+#define DO_TABLE_LET_IS(name, is) DO_WORK_LET_IS DELAY_OPEN_BRACE_0() name, is CLOSE_MACRO
 
-#define PARSE_DO_ITERATION(check, ...)                                                                                      \
-  EVAL2(IF_ELSE OUT(DO_WORK##check IF_ELSE(DO_CHECK##check, , VOID DELAY_OPEN_BRACE_3()) __VA_ARGS__ DELAY_CLOSE_BRACE_0(), \
-                    __VA_OPT__(VOID),                                                                                       \
-                    check __VA_OPT__(PARSE_DO_ITERATION_HELPER OUT)))                                                       \
-  __VA_OPT__((__VA_ARGS__))
+#define DO_WORK_CODE(...) __VA_OPT__(PARSE_DO_ITERATION_HELPER DELAY_OUT_0()(__VA_ARGS__))
 
-#define DO(...)                                   \
-  [&] {                                           \
-    EVAL(PARSE_DO_ITERATION(void(); __VA_ARGS__)) \
+#define DO_TABLE_CODE(...) __VA_ARGS__ DO_WORK_CODE
+
+#define PARSE_DO_ITERATION(check, ...) DO_TABLE##check(__VA_ARGS__)
+
+#define DO(...)                                  \
+  [&] {                                          \
+    EVAL(PARSE_DO_ITERATION(_CODE(__VA_ARGS__))) \
+  }()
+
+#define DO_GLOBAL(...)                           \
+  [] {                                           \
+    EVAL(PARSE_DO_ITERATION(_CODE(__VA_ARGS__))) \
   }()
