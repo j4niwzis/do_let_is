@@ -9,15 +9,15 @@
 #undef LAMBDA_CAPTURE
 #define LAMBDA_CAPTURE =, this
 
-#define GENERATOR(fields, init, ...) \
-  [&] {                              \
-    struct : generator_base {        \
-      EVAL3 fields;                  \
-      auto impl() {                  \
-        return DO(__VA_ARGS__);      \
-      }                              \
-    } gen{EVAL3 init};               \
-    return gen;                      \
+#define GENERATOR(fields, init, ...)                        \
+  [&] {                                                     \
+    struct : generator_base {                               \
+      UNWRAP fields;                                        \
+      auto impl() {                                         \
+        EVAL(PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))); \
+      }                                                     \
+    } gen{UNWRAP init};                                     \
+    return gen;                                             \
   }()
 
 #define YIELD(...) LET _ IS(yielder{__VA_ARGS__})
