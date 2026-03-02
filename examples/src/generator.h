@@ -3,25 +3,25 @@
 #include <do_let_is.h>
 
 #include <iterator>
-#include <variant>
+#include <optional>
 
 #include "inplace_function.h"
 
 #undef LAMBDA_CAPTURE
 #define LAMBDA_CAPTURE /* NOLINT */ =, this
 
-#define GENERATOR(fields, init, ...)                        \
-  [&] {                                                     \
-    struct : generator_base {                               \
-      UNWRAP fields;                                        \
-      constexpr auto impl() {                               \
-        EVAL(PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))); \
-      }                                                     \
-    } gen{UNWRAP init};                                     \
-    return gen;                                             \
+#define GENERATOR(fields, init, ...)                                                \
+  [&] {                                                                             \
+    struct : ::doletis::generator_base {                                            \
+      UNWRAP fields;                                                                \
+      constexpr auto impl() { EVAL(PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))); } \
+    } gen{UNWRAP init};                                                             \
+    return gen;                                                                     \
   }()
 
-#define YIELD(...) LET _ IS(yielder{__VA_ARGS__})
+#define YIELD(...) LET _ IS(::doletis::yielder{__VA_ARGS__})
+
+namespace doletis {
 
 template <typename T>
 struct yielder {
@@ -30,22 +30,20 @@ struct yielder {
 
 template <typename T, std::size_t Capacity,
           std::size_t Alignment = 8>  // NOLINT
-struct rec {
+struct generator_continuation {
   using value_type = T;
-  struct Some {
+  struct type {
     T value;
-    stdext::inplace_function<rec(), Capacity, Alignment> f;
+    stdext::inplace_function<generator_continuation(), Capacity, Alignment> f;
   };
-  std::variant<std::monostate, Some> value;
+  std::optional<type> value = std::nullopt;
 };
 
 template <typename T, typename F>
 constexpr auto bind(yielder<T> value, F&& f) {
   using R = decltype(std::forward<F>(f)(std::monostate{}));
-  return R{.value = typename R::Some{.value = std::move(value.value),
-                                     .f = [f = std::forward<F>(f)] mutable {
-                                       return std::move(f)(std::monostate{});
-                                     }}};
+  return R{.value = typename R::type{.value = std::move(value.value),
+                                     .f = [f = std::forward<F>(f)] mutable { return std::move(f)(std::monostate{}); }}};
 }
 
 struct generator_base {
@@ -57,20 +55,16 @@ struct generator_base {
     using iterator_concept = std::input_iterator_tag;
     step_t current;
 
-    constexpr auto operator*() const {
-      return std::get<1>(current.value).value;
-    }
+    constexpr value_type operator*() const { return current.value->value; }
 
     constexpr iterator& operator++() {
-      current = std::get<1>(current.value).f();
+      current = current.value->f();
       return *this;
     }
 
     constexpr void operator++(int) { ++(*this); }
 
-    constexpr bool operator==(std::default_sentinel_t) const {
-      return current.value.index() == 0;
-    }
+    constexpr bool operator==(std::default_sentinel_t) const { return !current.value; }
   };
   template <typename S>
   constexpr iterator<S> begin(this const S& s) = delete;
@@ -79,9 +73,9 @@ struct generator_base {
     return iterator<S>{s.impl()};
   }
 
-  constexpr std::default_sentinel_t end() const noexcept {
-    return std::default_sentinel;
-  }
+  constexpr std::default_sentinel_t end() const noexcept { return std::default_sentinel; }
 };
+
+}  // namespace doletis
 
 #endif

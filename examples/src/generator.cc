@@ -1,7 +1,7 @@
+#include "generator.h"
+
 #include <algorithm>
 #include <print>
-
-#include "generator.h"
 
 // Allocation free generators
 
@@ -12,7 +12,7 @@ constexpr auto my_generator() {
       YIELD(i);
       ++i;
     )
-    return rec<int, 24>();
+    return doletis::generator_continuation<int, 24>();
   );
 }
 static_assert(std::ranges::equal(my_generator(),  // NOLINTNEXTLINE

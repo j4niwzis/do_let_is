@@ -141,7 +141,7 @@
 #define PARSE_DO_ITERATION_HELPER(...) PARSE_DO_ITERATION OUT(__VA_ARGS__)
 
 #define DO_WORK_LET_IS(name, is, id_while, id_if, ...) \
-  return ::bind(is, [LAMBDA_CAPTURE](auto&& name) { PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(id_while, id_if, __VA_ARGS__) });
+  return ::doletis::bind(is, [LAMBDA_CAPTURE](auto&& name) { PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(id_while, id_if, __VA_ARGS__) });
 
 #define CLOSE_MACRO(...) , __VA_ARGS__ )
 
