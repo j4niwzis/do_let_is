@@ -13,7 +13,7 @@
   [&] {                                                     \
     struct : generator_base {                               \
       UNWRAP fields;                                        \
-      auto impl() {                                         \
+      constexpr auto impl() {                                         \
         EVAL(PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))); \
       }                                                     \
     } gen{UNWRAP init};                                     \
