@@ -1,2 +1,3 @@
 BasedOnStyle: Google
 WhitespaceSensitiveMacros: [DO, DO_GLOBAL, GENERATOR]
+ColumnLimit: 140

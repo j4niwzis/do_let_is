@@ -140,74 +140,53 @@
 
 #define PARSE_DO_ITERATION_HELPER(...) PARSE_DO_ITERATION OUT(__VA_ARGS__)
 
-#define DO_WORK_LET_IS(name, is, id_while, id_if, ...)                    \
-  return ::bind(is, [LAMBDA_CAPTURE](auto&& name) {                       \
-    PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(id_while, id_if, __VA_ARGS__) \
-  });
+#define DO_WORK_LET_IS(name, is, id_while, id_if, ...) \
+  return ::bind(is, [LAMBDA_CAPTURE](auto&& name) { PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(id_while, id_if, __VA_ARGS__) });
 
 #define CLOSE_MACRO(...) , __VA_ARGS__ )
 
-#define DO_TABLE_LET_IS(name, is) \
-  DO_WORK_LET_IS DELAY_OPEN_BRACE_0() name, is CLOSE_MACRO
+#define DO_TABLE_LET_IS(name, is) DO_WORK_LET_IS DELAY_OPEN_BRACE_0() name, is CLOSE_MACRO
 
-#define DO_WORK_CODE(id_while, id_if, ...) \
-  __VA_OPT__(                              \
-      PARSE_DO_ITERATION_HELPER DELAY_OUT_0()(id_while, id_if, __VA_ARGS__))
+#define DO_WORK_CODE(id_while, id_if, ...) __VA_OPT__(PARSE_DO_ITERATION_HELPER DELAY_OUT_0()(id_while, id_if, __VA_ARGS__))
 
 #define DO_TABLE_CODE(...) __VA_ARGS__ DO_WORK_CODE
 
 #define UNWRAP(...) __VA_ARGS__
 
-#define DO_WORK_WHILE(cond, body, id_while, id_if, ...)                     \
-  return [LAMBDA_CAPTURE](this const auto& while_self_##id_while,           \
-                          bool break_flag = false) {                        \
-    if (break_flag || !cond) {                                              \
-      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(id_while, id_if, __VA_ARGS__) \
-    }                                                                       \
-    PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(                                \
-        INC(id_while), id_if, UNWRAP body,                                  \
-        _CODE(return while_self_##id_while();))                             \
+#define DO_WORK_WHILE(cond, body, id_while, id_if, ...)                                                                \
+  return [LAMBDA_CAPTURE](this const auto& while_self_##id_while, bool break_flag = false) {                           \
+    if (break_flag || !cond) {                                                                                         \
+      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(id_while, id_if, __VA_ARGS__)                                            \
+    }                                                                                                                  \
+    PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(INC(id_while), id_if, UNWRAP body, _CODE(return while_self_##id_while();)) \
   }();
 
-#define DO_TABLE_WHILE(cond, body) \
-  DO_WORK_WHILE DELAY_OPEN_BRACE_0() cond, body CLOSE_MACRO
+#define DO_TABLE_WHILE(cond, body) DO_WORK_WHILE DELAY_OPEN_BRACE_0() cond, body CLOSE_MACRO
 
-#define DO_WORK_CONTINUE_BASE(break_flag, id_while, id_if, ...) \
-  return CONCAT_0(while_self_, DEC(id_while))(break_flag);
+#define DO_WORK_CONTINUE_BASE(break_flag, id_while, id_if, ...) return CONCAT_0(while_self_, DEC(id_while))(break_flag);
 
-#define DO_TABLE_CONTINUE \
-  DO_WORK_CONTINUE_BASE DELAY_OPEN_BRACE_0() false CLOSE_MACRO
+#define DO_TABLE_CONTINUE DO_WORK_CONTINUE_BASE DELAY_OPEN_BRACE_0() false CLOSE_MACRO
 
-#define DO_TABLE_BREAK \
-  DO_WORK_CONTINUE_BASE DELAY_OPEN_BRACE_0() true CLOSE_MACRO
+#define DO_TABLE_BREAK DO_WORK_CONTINUE_BASE DELAY_OPEN_BRACE_0() true CLOSE_MACRO
 
-#define DO_WORK_IF(check, body, els, id_while, id_if, ...)          \
-  return [LAMBDA_CAPTURE](this const auto& if_self_##id_if,         \
-                          bool is_cont = false) {                   \
-    if (is_cont) {                                                  \
-      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(id_while, INC(id_if), \
-                                              __VA_ARGS__)          \
-    }                                                               \
-    if check {                                                      \
-      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(                      \
-          id_while, INC(id_if), UNWRAP body,                        \
-          _CODE(return if_self_##id_if(true);))                     \
-    } else {                                                        \
-      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(                      \
-          id_while, INC(id_if), UNWRAP els,                         \
-          _CODE(return if_self_##id_if(true);))                     \
-    }                                                               \
+#define DO_WORK_IF(check, body, els, id_while, id_if, ...)                                                             \
+  return [LAMBDA_CAPTURE](this const auto& if_self_##id_if, bool is_cont = false) {                                    \
+    if (is_cont) {                                                                                                     \
+      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(id_while, INC(id_if), __VA_ARGS__)                                       \
+    }                                                                                                                  \
+    if check {                                                                                                         \
+      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(id_while, INC(id_if), UNWRAP body, _CODE(return if_self_##id_if(true);)) \
+    } else {                                                                                                           \
+      PARSE_DO_ITERATION_HELPER DELAY_OUT_3()(id_while, INC(id_if), UNWRAP els, _CODE(return if_self_##id_if(true);))  \
+    }                                                                                                                  \
   }();
 
-#define DO_TABLE_IF(check, body, els) \
-  DO_WORK_IF DELAY_OPEN_BRACE_0() check, body, els CLOSE_MACRO
+#define DO_TABLE_IF(check, body, els) DO_WORK_IF DELAY_OPEN_BRACE_0() check, body, els CLOSE_MACRO
 
-#define PARSE_DO_ITERATION(id_while, id_if, check, ...) \
-  DO_TABLE##check(id_while, id_if __VA_OPT__(, ) __VA_ARGS__)
+#define PARSE_DO_ITERATION(id_while, id_if, check, ...) DO_TABLE##check(id_while, id_if __VA_OPT__(, ) __VA_ARGS__)
 
 #define DO(...) [&] { EVAL(PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))) }()
 
-#define DO_GLOBAL(...) \
-  [] { EVAL(PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))) }()
+#define DO_GLOBAL(...) [] { EVAL(PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))) }()
 
 #endif
