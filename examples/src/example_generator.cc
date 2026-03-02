@@ -1,22 +1,22 @@
+#include <algorithm>
 #include <print>
 
 #include "generator.h"
 
 // Allocation free generators
 
-// clang-format off
-
-auto my_generator() {
-  return GENERATOR((int i), (.i = 0), 
+constexpr auto my_generator() {
+  return GENERATOR((int i), (.i = 0),
     YIELD(42);
-    WHILE(i != 10)(
+    WHILE(i != 10) (
       YIELD(i);
       ++i;
     )
-    return rec<int, 16>();
+    return rec<int, 24>();
   );
 }
-// clang-format on
+static_assert(std::ranges::equal(my_generator(),  // NOLINTNEXTLINE
+                                 std::array{42, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
 
 int main() {
   auto gen = my_generator();

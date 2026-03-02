@@ -1,19 +1,20 @@
 #ifndef GENERATOR
 
+#include <do_let_is.h>
+
 #include <iterator>
 #include <variant>
 
-#include "do_let_is.h"
 #include "inplace_function.h"
 
 #undef LAMBDA_CAPTURE
-#define LAMBDA_CAPTURE =, this
+#define LAMBDA_CAPTURE /* NOLINT */ =, this
 
 #define GENERATOR(fields, init, ...)                        \
   [&] {                                                     \
     struct : generator_base {                               \
       UNWRAP fields;                                        \
-      constexpr auto impl() {                                         \
+      constexpr auto impl() {                               \
         EVAL(PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))); \
       }                                                     \
     } gen{UNWRAP init};                                     \
@@ -27,7 +28,8 @@ struct yielder {
   T value;
 };
 
-template <typename T, std::size_t Capacity, std::size_t Alignment = 8>  // NOLINT
+template <typename T, std::size_t Capacity,
+          std::size_t Alignment = 8>  // NOLINT
 struct rec {
   using value_type = T;
   struct Some {
@@ -40,7 +42,8 @@ struct rec {
 template <typename T, typename F>
 constexpr auto bind(yielder<T> value, F&& f) {
   using R = decltype(std::forward<F>(f)(std::monostate{}));
-  return R{.value = typename R::Some{.value = std::move(value.value), .f = [f = std::forward<F>(f)] mutable {
+  return R{.value = typename R::Some{.value = std::move(value.value),
+                                     .f = [f = std::forward<F>(f)] mutable {
                                        return std::move(f)(std::monostate{});
                                      }}};
 }
@@ -63,9 +66,7 @@ struct generator_base {
       return *this;
     }
 
-    constexpr void operator++(int) {
-      ++(*this);
-    }
+    constexpr void operator++(int) { ++(*this); }
 
     constexpr bool operator==(std::default_sentinel_t) const {
       return current.value.index() == 0;
