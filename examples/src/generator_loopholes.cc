@@ -3,14 +3,14 @@
 #include <algorithm>
 #include <array>
 
-constexpr auto my_generator() {
+constexpr auto my_generator() {  //
   return GENERATOR_LOOPHOLES((int i), (.i = 0),
     YIELD(42);
     WHILE(i != 10) (
       YIELD(i);
       ++i;
     )
-    return doletis::loopholes::generator_continuation<tag, int, 24>();
+    return end<int, 16>();
   );
 }
 

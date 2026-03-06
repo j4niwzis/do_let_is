@@ -5,6 +5,7 @@
 #include <iterator>
 #include <optional>
 
+#include "generator_continuation_loopholes.h"
 #include "inplace_function.h"
 
 #undef LAMBDA_CAPTURE
@@ -74,8 +75,16 @@ struct generator_base {
   }
 
   constexpr std::default_sentinel_t end() const noexcept { return std::default_sentinel; }
-};
 
+  template <typename T, std::size_t Capacity, std::size_t Alignment = sizeof(void*), typename Self>
+  constexpr auto end(this const Self& self) {
+    if constexpr (requires { typename std::decay_t<Self>::tag; }) {
+      return loopholes::generator_continuation<typename std::decay_t<Self>::tag, T, Capacity, Alignment>{};
+    } else {
+      return generator_continuation<T, Capacity + sizeof(void*), Alignment>{};
+    }
+  }
+};
 }  // namespace doletis
 
 #endif
