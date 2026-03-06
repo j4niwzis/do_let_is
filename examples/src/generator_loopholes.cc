@@ -4,13 +4,13 @@
 #include <array>
 
 constexpr auto my_generator() {
-  return GENERATOR((int i), (.i = 0),
+  return GENERATOR_LOOPHOLES((int i), (.i = 0),
     YIELD(42);
     WHILE(i != 10) (
       YIELD(i);
       ++i;
     )
-    return doletis::generator_continuation<tag, int, 16>();
+    return doletis::loopholes::generator_continuation<tag, int, 24>();
   );
 }
 
