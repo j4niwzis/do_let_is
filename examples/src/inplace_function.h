@@ -5,7 +5,6 @@
 #include <type_traits>
 #include <utility>
 
-
 #ifdef INPLACE_FUNCTION_USE_NAMESPACE
 namespace {
 #endif
@@ -24,16 +23,13 @@ struct interface {
 template <typename F, typename R, typename... Args>
 struct concrete : interface<R, Args...> {
   F func;
-  constexpr concrete(F f) : func(std::move(f)) {
-  }
-  constexpr R operator()(Args... args) override {
-    return func(std::forward<Args>(args)...);
-  }
-  constexpr virtual interface<R, Args...>* move_to(void* ptr) noexcept override {
+  explicit constexpr concrete(F f) : func(std::move(f)) {}
+  constexpr R operator()(Args... args) override { return func(std::forward<Args>(args)...); }
+  constexpr interface<R, Args...>* move_to(void* ptr) noexcept override {
     if consteval {
       return new concrete{std::move(this->func)};  // NOLINT
     }
-    return new(ptr) concrete{std::move(this->func)};  // NOLINT
+    return new (ptr) concrete{std::move(this->func)};  // NOLINT
   }
 };
 
@@ -46,12 +42,11 @@ template <typename R, typename... Args, std::size_t Capacity, std::size_t Alignm
 struct inplace_function<R(Args...), Capacity, Alignment> {
   using interface = internal::interface<R, Args...>;
 
-  template <typename F>
-  constexpr inplace_function(F&& f) : ptr(create(std::forward<F>(f))) {  // NOLINT
-  }
+  template <typename F>  // NOLINTNEXTLINE
+  constexpr inplace_function(F&& f) : _ptr(create(std::forward<F>(f))) {}
 
-  constexpr inplace_function(inplace_function&& other) noexcept : ptr(other.ptr->move_to(_data)) {
-  }
+  // NOLINTNEXTLINE
+  constexpr inplace_function(inplace_function&& other) noexcept : _ptr(other._ptr->move_to(_data)) {}
   constexpr inplace_function(const inplace_function&) = delete;
   constexpr inplace_function& operator=(inplace_function&& other) noexcept {
     std::destroy_at(this);
@@ -61,14 +56,12 @@ struct inplace_function<R(Args...), Capacity, Alignment> {
   constexpr auto& operator=(const inplace_function&) = delete;
   constexpr ~inplace_function() {
     if consteval {
-      delete ptr;
+      delete _ptr;
       return;
     }
-    std::destroy_at(ptr);
+    std::destroy_at(_ptr);
   }
-  constexpr R operator()(Args... args) {
-    return (*ptr)(std::forward<Args>(args)...);
-  }
+  constexpr R operator()(Args... args) { return (*_ptr)(std::forward<Args>(args)...); }
 
  private:
   template <typename F>
@@ -79,14 +72,13 @@ struct inplace_function<R(Args...), Capacity, Alignment> {
     if consteval {
       return new T{std::forward<F>(f)};  // NOLINT
     }
-    return new(_data) T{std::forward<F>(f)};
+    return new (_data) T{std::forward<F>(f)};  // NOLINT
   }
-  interface* ptr;
-  alignas(Alignment) std::byte _data[Capacity];  /// NOLINT
+  interface* _ptr;
+  alignas(Alignment) std::byte _data[Capacity];  // NOLINT
 };
 
 }  // namespace stdext
-
 
 #endif
 #ifdef INPLACE_FUNCTION_USE_NAMESPACE
