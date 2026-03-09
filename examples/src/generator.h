@@ -1,6 +1,6 @@
 #ifndef GENERATOR
 
-#include <do_let_is.h>
+#include <do_let_is/short.h>
 
 #include <iterator>
 #include <optional>
@@ -8,16 +8,16 @@
 #include "generator_continuation_loopholes.h"
 #include "inplace_function.h"
 
-#undef LAMBDA_CAPTURE
-#define LAMBDA_CAPTURE /* NOLINT */ =, this
+#undef DO_LET_IS_LAMBDA_CAPTURE
+#define DO_LET_IS_LAMBDA_CAPTURE /* NOLINT */ =, this
 
-#define GENERATOR(fields, init, ...)                                               \
-  [&] {                                                                            \
-    struct : ::doletis::generator_base {                                           \
-      UNWRAP fields;                                                               \
-      constexpr auto impl() { EVAL(PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))) } \
-    } gen{UNWRAP init};                                                            \
-    return gen;                                                                    \
+#define GENERATOR(fields, init, ...)                                                                   \
+  [&] {                                                                                                \
+    struct : ::doletis::generator_base {                                                               \
+      DO_LET_IS_UNWRAP fields;                                                                         \
+      constexpr auto impl() { DO_LET_IS_EVAL(DO_LET_IS_PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))) } \
+    } gen{DO_LET_IS_UNWRAP init};                                                                      \
+    return gen;                                                                                        \
   }()
 
 #define YIELD(...) LET _ IS(::doletis::yielder{__VA_ARGS__})

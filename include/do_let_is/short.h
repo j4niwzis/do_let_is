@@ -1,0 +1,17 @@
+#ifndef DO_LET_IS_SHORT_H
+#define DO_LET_IS_SHORT_H
+
+#include <do_let_is/do_let_is.h>
+
+#define DO DO_LET_IS_DO
+#define DO_GLOBAL DO_LET_IS_DO_GLOBAL
+#define LET DO_LET_IS_LET
+#define IS DO_LET_IS_IS
+#define IF DO_LET_IS_IF
+#define IF_CONSTEXPR DO_LET_IS_IF_CONSTEXPR
+#define IF_CONSTEVAL DO_LET_IS_IF_CONSTEVAL
+#define WHILE DO_LET_IS_WHILE
+#define CONTINUE DO_LET_IS_CONTINUE
+#define BREAK DO_LET_IS_BREAK
+
+#endif
