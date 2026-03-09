@@ -1,5 +1,6 @@
 #ifndef DO_LET_IS
 #define DO_LET_IS
+
 #define OUT
 
 #define EVAL_2(...) __VA_ARGS__
@@ -188,5 +189,7 @@
 #define DO(...) [&] { EVAL(PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))) }()
 
 #define DO_GLOBAL(...) [] { EVAL(PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))) }()
+
+namespace do_let_is {}  // namespace do_let_is
 
 #endif
