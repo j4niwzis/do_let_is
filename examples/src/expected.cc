@@ -21,3 +21,4 @@ constexpr auto foo(std::expected<int, error> a, std::expected<int, error> b) {  
 static_assert(foo(5, 5) == 1);                                         // NOLINT
 static_assert(foo(5, std::unexpected(error{})).has_value() == false);  // NOLINT
 static_assert(foo(5, 0).has_value() == false);                         // NOLINT
+int main() {}
