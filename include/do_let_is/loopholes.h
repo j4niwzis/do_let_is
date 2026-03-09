@@ -1,11 +1,11 @@
-#ifndef LOOPHOLES_H
-#define LOOPHOLES_H
+#ifndef DO_LET_IS_LOOPHOLES_H
+#define DO_LET_IS_LOOPHOLES_H
 
 #include <cstddef>
 #include <tuple>
 #include <utility>
 
-namespace stdext::loopholes {
+namespace doletis::loopholes {
 
 template <typename Key>
 struct adl_tag {
@@ -52,6 +52,6 @@ consteval auto read_set() {
   }(std::make_index_sequence<have_cnt>{});
 }
 
-}  // namespace stdext::loopholes
+}  // namespace doletis::loopholes
 
 #endif

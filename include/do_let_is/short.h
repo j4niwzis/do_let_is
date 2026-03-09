@@ -1,7 +1,6 @@
-#ifndef DO_LET_IS_SHORT_H
-#define DO_LET_IS_SHORT_H
-
-#include <do_let_is/do_let_is.h>
+#ifdef DO_LET_IS_DO
+#ifndef DO_LET_IS_SHORT_DO
+#define DO_LET_IS_SHORT_DO
 
 #define DO DO_LET_IS_DO
 #define DO_GLOBAL DO_LET_IS_DO_GLOBAL
@@ -14,4 +13,24 @@
 #define CONTINUE DO_LET_IS_CONTINUE
 #define BREAK DO_LET_IS_BREAK
 
+#endif
+#endif
+
+#ifdef DO_LET_IS_GENERATOR
+#ifndef DO_LET_IS_SHORT_GENERATOR
+#define DO_LET_IS_SHORT_GENERATOR
+
+#define GENERATOR DO_LET_IS_GENERATOR
+#define YIELD DO_LET_IS_YIELD
+
+#endif
+#endif
+
+#ifdef DO_LET_IS_GENERATOR_LOOPHOLES
+#ifndef DO_LET_IS_SHORT_GENERATOR_LOOPHOLES
+#define DO_LET_IS_SHORT_GENERATOR_LOOPHOLES
+
+#define GENERATOR_LOOPHOLES DO_LET_IS_GENERATOR_LOOPHOLES
+
+#endif
 #endif

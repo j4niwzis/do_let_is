@@ -1,10 +1,10 @@
-#ifndef GENERATOR_CONTINUATION_LOOPHOLES_H
-#define GENERATOR_CONTINUATION_LOOPHOLES_H
+#ifndef DO_LET_IS_GENERATOR_CONTINUATION_LOOPHOLES_H
+#define DO_LET_IS_GENERATOR_CONTINUATION_LOOPHOLES_H
 
 #include <cstddef>
 #include <optional>
 
-#include "inplace_function_loopholes.h"
+#include "do_let_is/inplace_function_loopholes.h"
 
 namespace doletis::loopholes {
 
@@ -14,7 +14,7 @@ struct generator_continuation {
   using value_type = T;
   struct type {
     T value;
-    stdext::loopholes::inplace_function<Tag, generator_continuation(), Capacity, Alignment> f;
+    doletis::loopholes::inplace_function<Tag, generator_continuation(), Capacity, Alignment> f;
   };
   std::optional<type> value = std::nullopt;
 };

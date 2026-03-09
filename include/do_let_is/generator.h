@@ -1,18 +1,18 @@
-#ifndef GENERATOR
-
-#include <do_let_is/short.h>
+#ifndef DO_LET_IS_GENERATOR_H
+#define DO_LET_IS_GENERATOR_H
 
 #include <iterator>
 #include <optional>
 #include <variant>
 
-#include "generator_continuation_loopholes.h"
-#include "inplace_function.h"
+#include "do_let_is/do_let_is.h"
+#include "do_let_is/generator_continuation_loopholes.h"
+#include "do_let_is/inplace_function.h"
 
 #undef DO_LET_IS_LAMBDA_CAPTURE
 #define DO_LET_IS_LAMBDA_CAPTURE /* NOLINT */ =, this
 
-#define GENERATOR(fields, init, ...)                                                                   \
+#define DO_LET_IS_GENERATOR(fields, init, ...)                                                         \
   [&] {                                                                                                \
     struct : ::doletis::generator_base {                                                               \
       DO_LET_IS_UNWRAP fields;                                                                         \
@@ -21,7 +21,7 @@
     return gen;                                                                                        \
   }()
 
-#define YIELD(...) LET _ IS(::doletis::yielder{__VA_ARGS__})
+#define DO_LET_IS_YIELD(...) DO_LET_IS_LET _ DO_LET_IS_IS(::doletis::yielder{__VA_ARGS__})
 
 namespace doletis {
 
@@ -36,7 +36,7 @@ struct generator_continuation {
   using value_type = T;
   struct type {
     T value;
-    stdext::inplace_function<generator_continuation(), Capacity, Alignment> f;
+    doletis::inplace_function<generator_continuation(), Capacity, Alignment> f;
   };
   std::optional<type> value = std::nullopt;
 };

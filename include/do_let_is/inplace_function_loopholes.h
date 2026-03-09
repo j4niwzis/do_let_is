@@ -1,14 +1,14 @@
-#ifndef INPLACE_FUNCTION_LOOPHOLES_H
-#define INPLACE_FUNCTION_LOOPHOLES_H
+#ifndef DO_LET_IS_INPLACE_FUNCTION_LOOPHOLES_H
+#define DO_LET_IS_INPLACE_FUNCTION_LOOPHOLES_H
 #include <cstddef>
 #include <memory>
 #include <type_traits>
 #include <utility>
 
-#include "inplace_function.h"
-#include "loopholes.h"
+#include "do_let_is/inplace_function.h"
+#include "do_let_is/loopholes.h"
 
-namespace stdext {
+namespace doletis {
 
 namespace loopholes {
 
@@ -165,6 +165,6 @@ struct inplace_function<Tag, R(Args...), Capacity, Alignment> {
 };
 
 }  // namespace loopholes
-}  // namespace stdext
+}  // namespace doletis
 
 #endif

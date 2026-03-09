@@ -1,15 +1,11 @@
-#ifndef INPLACE_FUNCTION_H
-#define INPLACE_FUNCTION_H
+#ifndef DO_LET_IS_INPLACE_FUNCTION_H
+#define DO_LET_IS_INPLACE_FUNCTION_H
 #include <cstddef>
 #include <memory>
 #include <type_traits>
 #include <utility>
 
-#ifdef INPLACE_FUNCTION_USE_NAMESPACE
-namespace {
-#endif
-
-namespace stdext {
+namespace doletis {
 
 namespace internal {
 
@@ -78,9 +74,6 @@ struct inplace_function<R(Args...), Capacity, Alignment> {
   alignas(Alignment) std::byte _data[Capacity];  // NOLINT
 };
 
-}  // namespace stdext
+}  // namespace doletis
 
-#endif
-#ifdef INPLACE_FUNCTION_USE_NAMESPACE
-}  // namespace
 #endif

@@ -1,5 +1,6 @@
 #ifndef OPTIONAL_H
 #define OPTIONAL_H
+#include <do_let_is/do_let_is.h>
 #include <do_let_is/short.h>
 
 #include <optional>
