@@ -1,5 +1,10 @@
-include/*.h linguist-language=C++
 examples/** linguist-vendored=false
 examples/** linguist-generated=false
-include/* linguist-language=C++
-old/*     linguist-language=C++
+
+include/** linguist-vendored=false
+include/** linguist-generated=false
+include/** linguist-language=C++
+
+old/** linguist-vendored=false
+old/** linguist-generated=false
+old/** linguist-language=C++
