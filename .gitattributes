@@ -1,1 +1,1 @@
-*.h linguist-language=C++
+include/*.h linguist-language=C++
