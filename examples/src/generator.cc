@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <print>
+#include <ranges>
+#include <vector>
 
 // Allocation free generators
 
@@ -24,7 +26,7 @@ int main() {
   gen.i = 3;
   std::println("{}", gen);  // prints [42, 3, 4, 5, 6, 7, 8, 9]
   /*
-  for(auto i : gen) {
+  for (auto i : gen) {
     std::println("{}", i);
   }
   */

@@ -4,6 +4,7 @@
 
 #include <iterator>
 #include <optional>
+#include <variant>
 
 #include "generator_continuation_loopholes.h"
 #include "inplace_function.h"
