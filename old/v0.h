@@ -47,5 +47,5 @@
 
 #define DO_GLOBAL(...) [] { EVAL(PARSE_DO_ITERATION(_CODE(__VA_ARGS__))) }()
 
-namespace do_let_is {}  // namespace do_let_is
+namespace doletis {}  // namespace doletis
 #endif
