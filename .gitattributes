@@ -1,3 +1,5 @@
 include/*.h linguist-language=C++
 examples/** linguist-vendored=false
 examples/** linguist-generated=false
+include/* linguist-language=C++
+old/*     linguist-language=C++
