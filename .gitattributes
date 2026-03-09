@@ -1,10 +1,10 @@
 examples/** linguist-vendored=false
 examples/** linguist-generated=false
 
-include/** linguist-vendored=false
-include/** linguist-generated=false
-include/** linguist-language=C++
+include/do_let_is.h linguist-vendored=false
+include/do_let_is.h linguist-generated=false
+include/do_let_is.h linguist-language=C++
 
-old/** linguist-vendored=false
-old/** linguist-generated=false
-old/** linguist-language=C++
+old/v0.h linguist-vendored=false
+old/v0.h linguist-generated=false
+old/v0.h linguist-language=C++
