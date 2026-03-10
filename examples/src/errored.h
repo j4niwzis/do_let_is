@@ -16,7 +16,7 @@ struct error {
 };
 
 template <typename Value, typename... Error>
-  requires(typename internal::get_unique<Error...>::type{} == type_set<Error...>{})
+  requires(is_unique<Error...>())
 struct errored;
 
 namespace internal {
@@ -54,7 +54,7 @@ constexpr auto bind_errored(Errored&& value, F&& f) {
 }  // namespace internal
 
 template <typename Value, typename... Error>
-  requires(typename internal::get_unique<Error...>::type{} == type_set<Error...>{})
+  requires(is_unique<Error...>())
 struct errored {
   using error_set = type_set<Error...>;
   using value_type = Value;
