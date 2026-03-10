@@ -26,7 +26,10 @@ template <typename T = dont_use_me, typename Base = dont_use_me>
 struct overload_check : Base {
   using Base::test;
   static consteval void test(type_list<T> value)
-    requires(!requires { Base::test(value); });
+    requires true;
+  static consteval void test(type_list<T> value)
+    requires(requires { Base::test(value); });
+
   template <typename T2>
   constexpr auto operator|(type_list<T2>) {
     constexpr auto next = overload_check<T2, overload_check>{};
