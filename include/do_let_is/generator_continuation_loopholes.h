@@ -9,7 +9,7 @@
 namespace doletis::loopholes {
 
 template <typename Tag, typename T, std::size_t Capacity,
-          std::size_t Alignment = 8>  // NOLINT
+          std::size_t Alignment>
 struct generator_continuation {
   using value_type = T;
   struct type {

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 4.1.1 FATAL_ERROR)
 
-project(BuildAll LANGUAGES CXX)
+project(BuildAll LANGUAGES C CXX)
 
 include(../cmake/tools.cmake)
 

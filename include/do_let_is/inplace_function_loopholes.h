@@ -100,13 +100,13 @@ struct define_function<Tag, R(Args...)> {
   static inline auto visit(Visitor&& visitor, void* ptr, std::size_t id) {
     return visit_ptr(std::forward<Visitor>(visitor), ptr, id, read_set<Tag>());
   }
-  friend inline void* move_to(call_tag tag, void* ptr, std::size_t id, void* to) {
+  friend inline void* move_to(call_tag, void* ptr, std::size_t id, void* to) {
     return visit([&]<typename T>(T* ptr) -> void* { return new (to) T{std::move(*ptr)}; }, ptr, id);
   }
-  friend inline R call(call_tag tag, void* ptr, std::size_t id, Args... args) {
+  friend inline R call(call_tag, void* ptr, std::size_t id, Args... args) {
     return visit([&](auto ptr) -> R { return (*ptr)(std::forward<Args>(args)...); }, ptr, id);
   }
-  friend inline void destroy(call_tag tag, void* ptr, std::size_t id) {
+  friend inline void destroy(call_tag, void* ptr, std::size_t id) {
     visit([]<typename T>(T* ptr) { ptr->~T(); }, ptr, id);
   }
 };

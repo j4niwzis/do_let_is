@@ -1,34 +1,48 @@
-#ifndef DO_LET_IS_GENERATOR_H
-#define DO_LET_IS_GENERATOR_H
+#ifndef __cplusplus
+#include "do_let_is/c/generator.h"
+#else
+
+#ifndef DO_LET_IS_CXX_GENERATOR_H
+#define DO_LET_IS_CXX_GENERATOR_H
 
 #include <iterator>
 #include <optional>
 #include <variant>
 
 #include "do_let_is/do_let_is.h"
-#include "do_let_is/generator_continuation_loopholes.h"
 #include "do_let_is/inplace_function.h"
 
-#undef DO_LET_IS_LAMBDA_CAPTURE
-#define DO_LET_IS_LAMBDA_CAPTURE /* NOLINT */ =, this
-
-#define DO_LET_IS_GENERATOR(fields, init, ...)                                                         \
-  [&] {                                                                                                \
-    struct : ::doletis::generator_base {                                                               \
-      DO_LET_IS_UNWRAP fields;                                                                         \
-      constexpr auto impl() { DO_LET_IS_EVAL(DO_LET_IS_PARSE_DO_ITERATION(0, 0, _CODE(__VA_ARGS__))) } \
-    } gen{DO_LET_IS_UNWRAP init};                                                                      \
-    return gen;                                                                                        \
+#define DO_LET_IS_CXX_GENERATOR(fields, init, ...)                                                       \
+  [&] {                                                                                                  \
+    struct : ::doletis::generator_base {                                                                 \
+      DO_LET_IS_UNWRAP fields;                                                                           \
+      constexpr auto impl() {                                                                            \
+        using _do_monad_t [[maybe_unused]] = void;                                                       \
+        DO_LET_IS_EVAL(DO_LET_IS_CXX_PARSE_DO_ITERATION(0, 0, 0, 1, 1, _CODE(__VA_ARGS__)))                 \
+      }                                                                                                  \
+    } gen{DO_LET_IS_UNWRAP init};                                                                        \
+    return gen;                                                                                          \
   }()
 
-#define DO_LET_IS_YIELD(...) DO_LET_IS_LET _ DO_LET_IS_IS(::doletis::yielder{__VA_ARGS__})
+#define DO_LET_IS_CXX_YIELD(...) DO_LET_IS_LET _ DO_LET_IS_IS(::doletis::yielder{__VA_ARGS__})
+#define DO_LET_IS_HAVE_CXX_GENERATOR 1
 
 namespace doletis {
+
+namespace loopholes {
+template <typename Tag, typename T, std::size_t Capacity, std::size_t Alignment = 8>
+struct generator_continuation;
+}  // namespace loopholes
 
 template <typename T>
 struct yielder {
   T value;
 };
+
+template <typename T, typename V>
+constexpr decltype(auto) doletis_pure(monad_tag<yielder<T>>, V&& val) {
+  return std::forward<V>(val);
+}
 
 template <typename T, std::size_t Capacity,
           std::size_t Alignment = 8>  // NOLINT
@@ -42,10 +56,17 @@ struct generator_continuation {
 };
 
 template <typename T, typename F>
-constexpr auto bind(yielder<T> value, F&& f) {
+constexpr auto doletis_bind(yielder<T> value, F&& f) {
   using R = decltype(std::forward<F>(f)(std::monostate{}));
   return R{.value = typename R::type{.value = std::move(value.value),
-                                     .f = [f = std::forward<F>(f)] mutable { return std::move(f)(std::monostate{}); }}};
+                                     .f = [f = std::forward<F>(f)] mutable {
+                                       return std::move(f)(std::monostate{});
+                                     }}};
+}
+
+template <typename T, typename Defer, typename F>
+constexpr auto doletis_bind_defer(yielder<T> value, const Defer&, F&& f) {
+  return doletis_bind(std::move(value), std::forward<F>(f));
 }
 
 struct generator_base {
@@ -78,7 +99,7 @@ struct generator_base {
   constexpr std::default_sentinel_t end() const noexcept { return std::default_sentinel; }
 
   template <typename T, std::size_t Capacity, std::size_t Alignment = sizeof(void*), typename Self>
-  constexpr auto end(this const Self& self) {
+  constexpr auto end(this const Self&) {
     if constexpr (requires { typename std::decay_t<Self>::tag; }) {
       return loopholes::generator_continuation<typename std::decay_t<Self>::tag, T, Capacity, Alignment>{};
     } else {
@@ -88,4 +109,11 @@ struct generator_base {
 };
 }  // namespace doletis
 
+#endif  // DO_LET_IS_CXX_GENERATOR_H
+
+#ifndef DO_LET_IS_GENERATOR
+#define DO_LET_IS_GENERATOR DO_LET_IS_CXX_GENERATOR
+#define DO_LET_IS_YIELD DO_LET_IS_CXX_YIELD
 #endif
+
+#endif  // __cplusplus

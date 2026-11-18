@@ -42,8 +42,8 @@ constexpr auto bind_errored(Errored&& value, F&& f) {
   using errored_t = std::decay_t<Errored>;
   using value_type = errored_t::value_type;
   using invoke_result = std::invoke_result_t<F, value_type>;
-  using result =
-      decltype(get_errored<typename invoke_result::value_type>(typename errored_t::error_set{}, typename invoke_result::error_set{}));
+  using result = decltype(get_errored<typename invoke_result::value_type>(
+      typename errored_t::error_set{}, typename invoke_result::error_set{}));
 
   if (value.has_value()) {
     return static_cast<result>(std::invoke(std::forward<F>(f), std::forward<Errored>(value).value()));
@@ -71,15 +71,15 @@ struct errored {
   constexpr errored(Value value) : _value(std::in_place_index<0>, std::move(value)) {  // NOLINT
   }
   template <typename T>
-  constexpr errored(::doletis::error<T>&& value) : _value(std::in_place_index<1>, std::move(value).value) {  // NOLINT
-  }
+  constexpr errored(::doletis::error<T>&& value)  // NOLINT
+      : _value(std::in_place_index<1>, std::move(value).value) {}
   template <typename T>
-  constexpr errored(::doletis::error<T>& value) : _value(std::in_place_index<1>, value.value) {  // NOLINT
-  }
+  constexpr errored(::doletis::error<T>& value)  // NOLINT
+      : _value(std::in_place_index<1>, value.value) {}
 
   template <typename T>
-  constexpr errored(const ::doletis::error<T>& value) : _value(std::in_place_index<1>, value.value) {  // NOLINT
-  }
+  constexpr errored(const ::doletis::error<T>& value)  // NOLINT
+      : _value(std::in_place_index<1>, value.value) {}
 
   template <typename Self, typename... Error2>
   constexpr explicit operator errored<Value, Error2...>(this Self&& self)
@@ -150,17 +150,17 @@ struct errored<void, Error...> : errored<void_result, Error...> {
 };
 
 template <typename Value, typename... Error, typename F>
-constexpr auto bind(const errored<Value, Error...>& value, F&& f) {
+constexpr auto doletis_bind(const errored<Value, Error...>& value, F&& f) {
   return internal::bind_errored(value, std::forward<F>(f));
 }
 
 template <typename Value, typename... Error, typename F>
-constexpr auto bind(errored<Value, Error...>& value, F&& f) {
+constexpr auto doletis_bind(errored<Value, Error...>& value, F&& f) {
   return internal::bind_errored(value, std::forward<F>(f));
 }
 
 template <typename Value, typename... Error, typename F>
-constexpr auto bind(errored<Value, Error...>&& value, F&& f) {
+constexpr auto doletis_bind(errored<Value, Error...>&& value, F&& f) {
   return internal::bind_errored(std::move(value), std::forward<F>(f));
 }
 
